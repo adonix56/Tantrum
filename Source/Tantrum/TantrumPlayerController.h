@@ -18,6 +18,10 @@ protected:
 	//void BeginPlay() override;
 	void SetupInputComponent() override;
 	void RequestJump();
+	void RequestStopJump();
+	void RequestCrouch();
+	void RequestSprint();
+	void RequestWalk();
 	void RequestMoveForward(float AxisValue);
 	void RequestMoveRight(float AxisValue);
 	void RequestLookUp(float AxisValue);

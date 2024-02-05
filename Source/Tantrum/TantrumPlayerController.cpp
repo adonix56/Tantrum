@@ -3,12 +3,17 @@
 
 #include "TantrumPlayerController.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void ATantrumPlayerController::SetupInputComponent() {
 	Super::SetupInputComponent();
 
 	if (InputComponent) {
 		InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATantrumPlayerController::RequestJump);
+		InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Released, this, &ATantrumPlayerController::RequestStopJump);
+		InputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ATantrumPlayerController::RequestCrouch);
+		InputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &ATantrumPlayerController::RequestSprint);
+		InputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ATantrumPlayerController::RequestWalk);
 		InputComponent->BindAxis(TEXT("MoveForward"), this, &ATantrumPlayerController::RequestMoveForward);
 		InputComponent->BindAxis(TEXT("MoveRight"), this, &ATantrumPlayerController::RequestMoveRight);
 		InputComponent->BindAxis(TEXT("LookUp"), this, &ATantrumPlayerController::RequestLookUp);
@@ -19,6 +24,34 @@ void ATantrumPlayerController::SetupInputComponent() {
 void ATantrumPlayerController::RequestJump() {
 	if (GetCharacter()) {
 		GetCharacter()->Jump();
+	}
+}
+
+void ATantrumPlayerController::RequestStopJump() {
+	if (GetCharacter()) {
+		GetCharacter()->StopJumping();
+	}
+}
+
+void ATantrumPlayerController::RequestCrouch() {
+	if (GetCharacter()) {
+		if (!GetCharacter()->GetCharacterMovement()->IsMovingOnGround()) { return; }
+		if (GetCharacter()->bIsCrouched)
+			GetCharacter()->UnCrouch();
+		else
+			GetCharacter()->Crouch();
+	}
+}
+
+void ATantrumPlayerController::RequestSprint() {
+	if (GetCharacter()) {
+		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
+	}
+}
+
+void ATantrumPlayerController::RequestWalk() {
+	if (GetCharacter()) {
+		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	}
 }
 
