@@ -2,6 +2,7 @@
 
 
 #include "TantrumCharacterBase.h"
+#include "TantrumPlayerController.h"
 
 // Sets default values
 ATantrumCharacterBase::ATantrumCharacterBase()
@@ -30,5 +31,25 @@ void ATantrumCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ATantrumCharacterBase::Landed(const FHitResult& Hit) 
+{
+	Super::Landed(Hit);
+
+	//Custom Landed Code
+	ATantrumPlayerController* PlayerController = GetController<ATantrumPlayerController>();
+
+	if (PlayerController) {
+		const float LandingSpeed = FMath::Abs(GetVelocity().Z);
+		if (LandingSpeed < MinImpactSpeed) { return; }
+
+		const float DeltaImpact = MaxImpactSpeed - MinImpactSpeed;
+		const float FallRatio = FMath::Clamp((LandingSpeed - MinImpactSpeed) / DeltaImpact, 0.0f, 1.0f);
+		const bool bAffectSmall = FallRatio <= 0.5f;
+		const bool bAffectLarge = FallRatio > 0.5f;
+		//scale intensity by landing impact
+		PlayerController->PlayDynamicForceFeedback(FallRatio, 0.5f, bAffectLarge, bAffectSmall, bAffectLarge, bAffectSmall);
+	}
 }
 
