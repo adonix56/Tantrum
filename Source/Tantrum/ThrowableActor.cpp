@@ -77,7 +77,7 @@ void AThrowableActor::Throw(FVector Forward)
 {
 	if (State == EThrowableState::Attach) {
 		State = EThrowableState::Throw;
-		ensure(DetachFromActor(FDetachmentTransformRules::KeepWorldTransform));
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		ProjectileMovementComponent->SetUpdatedComponent(RootComponent);
 		ProjectileMovementComponent->Activate(true);
 		ProjectileMovementComponent->bIsHomingProjectile = false;

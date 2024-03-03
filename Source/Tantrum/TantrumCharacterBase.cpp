@@ -13,19 +13,45 @@ ATantrumCharacterBase::ATantrumCharacterBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	PickupTrigger->CreateDefaultSubobject<USphereComponent>(TEXT("PickupTrigger"));
-	PickupTrigger->SetupAttachment(RootComponent);
+	//PickupTrigger->CreateDefaultSubobject<USphereComponent>(TEXT("PickupTrigger"));
+	//PickupTrigger->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
 void ATantrumCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	//PickupTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapBegin);
+	//PickupTrigger->OnComponentEndOverlap.AddDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapEnd);
 }
 
 void ATantrumCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	//PickupTrigger->OnComponentBeginOverlap.RemoveDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapBegin);
+	//PickupTrigger->OnComponentEndOverlap.RemoveDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapEnd);
 	Super::EndPlay(EndPlayReason);
+}
+
+void ATantrumCharacterBase::OnPickupTriggerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr)
+		return;
+
+	AThrowableActor* ThrowableActor = Cast<AThrowableActor>(OtherActor);
+	if (ThrowableActor) {
+		ThrowableObjects.Add(ThrowableActor);
+	}
+}
+
+void ATantrumCharacterBase::OnPickupTriggerOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor == nullptr)
+		return;
+
+	AThrowableActor* ThrowableActor = Cast<AThrowableActor>(OtherActor);
+	if (ThrowableActor) {
+		ThrowableObjects.RemoveSingleSwap(ThrowableActor);
+	}
 }
 
 AThrowableActor* ATantrumCharacterBase::GetClosestThrowableObject()
@@ -72,9 +98,9 @@ void ATantrumCharacterBase::Landed(const FHitResult& Hit)
 
 void ATantrumCharacterBase::RequestPull()
 {
-	if (State == ECharacterThrowState::None && ThrowableObjects.Num() > 0) { 
+	if (State == ECharacterThrowState::None && CurrentThrowableObject) { 
 		State = ECharacterThrowState::RequestingPull;
-		ThrowTestObject->PullToActor(this);
+		CurrentThrowableObject->PullToActor(this);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Got nothing to pull"));
