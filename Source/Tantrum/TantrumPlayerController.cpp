@@ -2,6 +2,7 @@
 
 
 #include "TantrumPlayerController.h"
+#include "TantrumCharacterBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -14,6 +15,8 @@ void ATantrumPlayerController::SetupInputComponent() {
 		InputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ATantrumPlayerController::RequestCrouch);
 		InputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &ATantrumPlayerController::RequestSprint);
 		InputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ATantrumPlayerController::RequestWalk);
+		InputComponent->BindAction(TEXT("Pull"), EInputEvent::IE_Pressed, this, &ATantrumPlayerController::RequestPull);
+		InputComponent->BindAction(TEXT("Throw"), EInputEvent::IE_Pressed, this, &ATantrumPlayerController::RequestThrow);
 		InputComponent->BindAxis(TEXT("MoveForward"), this, &ATantrumPlayerController::RequestMoveForward);
 		InputComponent->BindAxis(TEXT("MoveRight"), this, &ATantrumPlayerController::RequestMoveRight);
 		InputComponent->BindAxis(TEXT("LookUp"), this, &ATantrumPlayerController::RequestLookUp);
@@ -52,6 +55,25 @@ void ATantrumPlayerController::RequestSprint() {
 void ATantrumPlayerController::RequestWalk() {
 	if (GetCharacter()) {
 		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	}
+}
+
+void ATantrumPlayerController::RequestPull() {
+	if (GetCharacter()) {
+		ATantrumCharacterBase* CharacterBase = Cast<ATantrumCharacterBase>(GetCharacter());
+		if (CharacterBase) {
+			CharacterBase->RequestPull();
+		}
+		//GetCharacter()
+	}
+}
+
+void ATantrumPlayerController::RequestThrow() {
+	if (GetCharacter()) {
+		ATantrumCharacterBase* CharacterBase = Cast<ATantrumCharacterBase>(GetCharacter());
+		if (CharacterBase) {
+			CharacterBase->RequestThrow();
+		}
 	}
 }
 

@@ -22,6 +22,8 @@ protected:
 	void RequestCrouch();
 	void RequestSprint();
 	void RequestWalk();
+	void RequestPull();
+	void RequestThrow();
 	void RequestMoveForward(float AxisValue);
 	void RequestMoveRight(float AxisValue);
 	void RequestLookUp(float AxisValue);

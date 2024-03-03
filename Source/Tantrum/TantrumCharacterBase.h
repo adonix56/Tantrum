@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "TantrumCharacterBase.generated.h"
 
+class AThrowableActor;
+class USphereComponent;
+
 UCLASS()
 class TANTRUM_API ATantrumCharacterBase : public ACharacter
 {
@@ -18,12 +21,33 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup")
+	USphereComponent* PickupTrigger;
 
 	UPROPERTY(EditAnywhere, Category = "Fall Impact")
 	float MinImpactSpeed = 800.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Fall Impact")
 	float MaxImpactSpeed = 1600.0f;
+
+	enum class ECharacterThrowState {
+		None,
+		RequestingPull,
+		Holding,
+		RequestingThrow,
+		Throwing,
+	};
+
+	UPROPERTY(VisibleAnywhere, Category = "Throwing")
+	TArray<AThrowableActor*> ThrowableObjects;
+
+	AThrowableActor* GetClosestThrowableObject();
+
+	AThrowableActor* CurrentThrowableObject;
+
+	ECharacterThrowState State = ECharacterThrowState::None;
 
 public:	
 	// Called every frame
@@ -33,5 +57,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void Landed(const FHitResult& Hit) override;
+
+	UFUNCTION()
+	void RequestPull();
+
+	UFUNCTION()
+	void RequestThrow();
+
+	UFUNCTION()
+	void Pickup(AActor* TargetObject);
 
 };
