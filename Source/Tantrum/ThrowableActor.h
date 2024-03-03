@@ -9,6 +9,15 @@
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
 
+UENUM(BlueprintType)
+enum class EThrowableState : uint8 {
+	Idle,
+	Pull,
+	Attach,
+	Throw,
+	Dropped
+};
+
 UCLASS()
 class TANTRUM_API AThrowableActor : public AActor
 {
@@ -19,13 +28,6 @@ public:
 	AThrowableActor();
 
 protected:
-	enum class EThrowableState {
-		Idle,
-		Pull,
-		Attach,
-		Throw,
-		Dropped
-	};
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,6 +45,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
+	UPROPERTY(VisibleAnywhere)
 	EThrowableState State = EThrowableState::Idle;
 
 	UPROPERTY(VisibleAnywhere)

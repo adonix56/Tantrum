@@ -9,6 +9,15 @@
 class AThrowableActor;
 class USphereComponent;
 
+UENUM(BlueprintType)
+enum class ECharacterThrowState : uint8 {
+	None UMETA(DisplayName = "None"),
+	RequestingPull UMETA(DisplayName = "RequestingPull"),
+	Holding UMETA(DisplayName = "Holding"),
+	RequestingThrow UMETA(DisplayName = "RequestingThrow"),
+	Throwing UMETA(DisplayName = "Throwing"),
+};
+
 UCLASS()
 class TANTRUM_API ATantrumCharacterBase : public ACharacter
 {
@@ -17,6 +26,9 @@ class TANTRUM_API ATantrumCharacterBase : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ATantrumCharacterBase();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup")
+	USphereComponent* PickupTrigger = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,22 +41,11 @@ protected:
 	UFUNCTION()
 	void OnPickupTriggerOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup")
-	USphereComponent* PickupTrigger;
-
 	UPROPERTY(EditAnywhere, Category = "Fall Impact")
 	float MinImpactSpeed = 800.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Fall Impact")
 	float MaxImpactSpeed = 1600.0f;
-
-	enum class ECharacterThrowState {
-		None,
-		RequestingPull,
-		Holding,
-		RequestingThrow,
-		Throwing,
-	};
 
 	UPROPERTY(VisibleAnywhere, Category = "Throwing")
 	TArray<AThrowableActor*> ThrowableObjects;
@@ -54,6 +55,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	AThrowableActor* CurrentThrowableObject;
 
+	UPROPERTY(VisibleAnywhere)
 	ECharacterThrowState State = ECharacterThrowState::None;
 
 public:	
