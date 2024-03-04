@@ -145,7 +145,6 @@ void ATantrumCharacterBase::PlayPullMontage(FName Section) {
 void ATantrumCharacterBase::RequestThrow()
 {
 	if (State == ECharacterThrowState::Holding) {
-		State = ECharacterThrowState::None;
 		PlayThrowMontage();
 	}
 }
@@ -156,14 +155,29 @@ void ATantrumCharacterBase::PlayThrowMontage() {
 	bool bPlayedSuccessfully = PlayAnimMontage(ThrowAnimMontage, PlayRate) > 0.0f;
 	if (bPlayedSuccessfully) {
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		
+		if (!MontageEndedDelegate.IsBound()) {
+			MontageEndedDelegate.BindUObject(this, &ATantrumCharacterBase::OnMontageEnded);
+		}
+		AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, ThrowAnimMontage);
 
 		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &ATantrumCharacterBase::OnThrowNotify);
 	}
 }
 
 void ATantrumCharacterBase::OnThrowNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) {
-	MoveIgnoreActorRemove(Cast<AActor>(CurrentThrowableObject));
-	CurrentThrowableObject->Throw(GetActorForwardVector());
+	UE_LOG(LogTemp, Warning, TEXT("THROW!!"));
+	if (State == ECharacterThrowState::Holding) {
+		State = ECharacterThrowState::None;
+		MoveIgnoreActorRemove(Cast<AActor>(CurrentThrowableObject));
+		CurrentThrowableObject->Throw(GetActorForwardVector());
+	}
+}
+
+void ATantrumCharacterBase::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) {
+		AnimInstance->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ATantrumCharacterBase::OnThrowNotify);
+	}
 }
 
 void ATantrumCharacterBase::Pickup(AActor* TargetObject)

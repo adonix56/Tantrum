@@ -73,7 +73,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	UAnimMontage* ThrowAnimMontage = nullptr;
 
+	UFUNCTION()
 	void OnThrowNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	FOnMontageEnded MontageEndedDelegate;
 
 public:	
 	// Called every frame
