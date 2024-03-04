@@ -127,6 +127,7 @@ void ATantrumCharacterBase::RequestPull()
 		//IsActorInViewRange(CurrentThrowableObject);
 		if (CurrentThrowableObject && CurrentThrowableObject->PullToActor(this)) {
 			State = ECharacterThrowState::RequestingPull;
+			PlayPullMontage(TEXT("Start"));
 			CurrentThrowableObject->SetHighlight(false);
 		}
 	}
@@ -135,21 +136,43 @@ void ATantrumCharacterBase::RequestPull()
 	}
 }
 
+void ATantrumCharacterBase::PlayPullMontage(FName Section) {
+	if (!PullAnimMontage) return;
+	const float PlayRate = 1.0f;
+	bool bPlayedSuccessfully = PlayAnimMontage(PullAnimMontage, PlayRate, Section) > 0.0f;
+}
+
 void ATantrumCharacterBase::RequestThrow()
 {
 	if (State == ECharacterThrowState::Holding) {
 		State = ECharacterThrowState::None;
-		MoveIgnoreActorRemove(Cast<AActor>(CurrentThrowableObject));
-		CurrentThrowableObject->Throw(GetActorForwardVector());
+		PlayThrowMontage();
 	}
+}
+
+void ATantrumCharacterBase::PlayThrowMontage() {
+	if (!ThrowAnimMontage) return;
+	const float PlayRate = 1.0f;
+	bool bPlayedSuccessfully = PlayAnimMontage(ThrowAnimMontage, PlayRate) > 0.0f;
+	if (bPlayedSuccessfully) {
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &ATantrumCharacterBase::OnThrowNotify);
+	}
+}
+
+void ATantrumCharacterBase::OnThrowNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) {
+	MoveIgnoreActorRemove(Cast<AActor>(CurrentThrowableObject));
+	CurrentThrowableObject->Throw(GetActorForwardVector());
 }
 
 void ATantrumCharacterBase::Pickup(AActor* TargetObject)
 {
 	if (State == ECharacterThrowState::RequestingPull) {
+		PlayPullMontage(TEXT("End"));
 		State = ECharacterThrowState::Holding;
 		MoveIgnoreActorAdd(TargetObject);
-		ensure(TargetObject->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_l_ThrowableSocket")));
+		ensure(TargetObject->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_r_ThrowableSocket")));
 	}
 }
 

@@ -63,6 +63,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	float MaxAngleToPull = 25.0f;
 
+	void PlayPullMontage(FName Section);
+
+	UPROPERTY(EditAnywhere, Category = "Throwing")
+	UAnimMontage* PullAnimMontage = nullptr;
+
+	void PlayThrowMontage();
+
+	UPROPERTY(EditAnywhere, Category = "Throwing")
+	UAnimMontage* ThrowAnimMontage = nullptr;
+
+	void OnThrowNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
