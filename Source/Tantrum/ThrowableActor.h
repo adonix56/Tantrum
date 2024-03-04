@@ -64,4 +64,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool PullToActor(AActor* Target);
 
+	UFUNCTION()
+	void Launch(FVector Velocity);
+
 };

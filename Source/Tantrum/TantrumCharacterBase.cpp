@@ -108,9 +108,9 @@ void ATantrumCharacterBase::Landed(const FHitResult& Hit)
 void ATantrumCharacterBase::RequestPull()
 {
 	if (State == ECharacterThrowState::None && ThrowableObjects.Num() > 0) { 
-		State = ECharacterThrowState::RequestingPull;
 		CurrentThrowableObject = GetClosestThrowableObject();
-		CurrentThrowableObject->PullToActor(this);
+		if (CurrentThrowableObject->PullToActor(this))
+			State = ECharacterThrowState::RequestingPull;
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Got nothing to pull"));

@@ -47,7 +47,10 @@ void AThrowableActor::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other
 
 bool AThrowableActor::PullToActor(AActor* Target)
 {
-	if (State == EThrowableState::Idle) {
+	if (State == EThrowableState::Idle || State == EThrowableState::Throw) {
+		if (State == EThrowableState::Throw) {
+			Launch(FVector::UpVector * 100.0f);
+		}
 		State = EThrowableState::Pull;
 		ProjectileMovementComponent->Activate(true);
 		ProjectileMovementComponent->bIsHomingProjectile = true;
@@ -78,11 +81,15 @@ void AThrowableActor::Throw(FVector Forward)
 	if (State == EThrowableState::Attach) {
 		State = EThrowableState::Throw;
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		ProjectileMovementComponent->SetUpdatedComponent(RootComponent);
-		ProjectileMovementComponent->Activate(true);
-		ProjectileMovementComponent->bIsHomingProjectile = false;
-		ProjectileMovementComponent->bInitialVelocityInLocalSpace = false;
-		ProjectileMovementComponent->Velocity = 1000.0f * Forward;
+		Launch(Forward * 1000.0f);
 	}
+}
+
+void AThrowableActor::Launch(FVector Velocity) {
+	ProjectileMovementComponent->SetUpdatedComponent(RootComponent);
+	ProjectileMovementComponent->Activate(true);
+	ProjectileMovementComponent->bIsHomingProjectile = false;
+	ProjectileMovementComponent->bInitialVelocityInLocalSpace = false;
+	ProjectileMovementComponent->Velocity = Velocity;
 }
 
