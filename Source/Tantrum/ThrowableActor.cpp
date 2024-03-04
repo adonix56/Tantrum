@@ -48,9 +48,7 @@ void AThrowableActor::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other
 bool AThrowableActor::PullToActor(AActor* Target)
 {
 	if (State == EThrowableState::Idle || State == EThrowableState::Throw) {
-		if (State == EThrowableState::Throw) {
-			Launch(FVector::UpVector * 100.0f);
-		}
+		Launch(FVector::UpVector * 1000.0f);
 		State = EThrowableState::Pull;
 		ProjectileMovementComponent->Activate(true);
 		ProjectileMovementComponent->bIsHomingProjectile = true;

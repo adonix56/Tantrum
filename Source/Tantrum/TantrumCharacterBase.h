@@ -67,6 +67,9 @@ public:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
+	UFUNCTION(BlueprintPure)
+	const bool IsPullingObject() { return State == ECharacterThrowState::RequestingPull; }
+
 	UFUNCTION()
 	void RequestPull();
 
