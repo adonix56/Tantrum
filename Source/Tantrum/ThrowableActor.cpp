@@ -91,3 +91,8 @@ void AThrowableActor::Launch(FVector Velocity) {
 	ProjectileMovementComponent->Velocity = Velocity;
 }
 
+void AThrowableActor::SetHighlight(bool Activate)
+{
+	StaticMeshComponent->SetRenderCustomDepth(Activate);
+}
+

@@ -54,28 +54,43 @@ void ATantrumCharacterBase::OnPickupTriggerOverlapEnd(UPrimitiveComponent* Overl
 	}
 }
 
+bool ATantrumCharacterBase::IsActorInViewRange(AActor* Target) {
+	FVector Direction = Target->GetActorLocation() - GetActorLocation();
+	Direction.Z = 0.0f;
+	float angle = acos(Direction.GetSafeNormal().Dot(GetActorForwardVector())) * 180 / PI;
+	return angle < MaxAngleToPull;
+}
+
 AThrowableActor* ATantrumCharacterBase::GetClosestThrowableObject()
 {
-	if (ThrowableObjects.Num() > 0) {
-		AThrowableActor* Closest = ThrowableObjects[0];
-		float ShortestDistance = GetSquaredDistanceTo(Closest);
-		for (int i = 1; i < ThrowableObjects.Num(); i++) {
+	AThrowableActor* Closest = nullptr;
+	float ShortestDistance = MAX_flt;
+	for (int i = 0; i < ThrowableObjects.Num(); i++) {
+		if (IsActorInViewRange(ThrowableObjects[i])) {
 			float NewDistance = GetSquaredDistanceTo(ThrowableObjects[i]);
 			if (NewDistance < ShortestDistance) {
 				ShortestDistance = NewDistance;
 				Closest = ThrowableObjects[i];
 			}
 		}
-		return Closest;
 	}
-	return nullptr;
+	return Closest;
 }
 
 // Called every frame
 void ATantrumCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (State == ECharacterThrowState::None) {
+		AThrowableActor* Closest = GetClosestThrowableObject();
+		if (Closest != CurrentThrowableObject) {
+			if (CurrentThrowableObject)
+				CurrentThrowableObject->SetHighlight(false);
+			CurrentThrowableObject = Closest;
+			if (CurrentThrowableObject)
+				CurrentThrowableObject->SetHighlight(true);
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -109,8 +124,11 @@ void ATantrumCharacterBase::RequestPull()
 {
 	if (State == ECharacterThrowState::None && ThrowableObjects.Num() > 0) { 
 		CurrentThrowableObject = GetClosestThrowableObject();
-		if (CurrentThrowableObject->PullToActor(this))
+		//IsActorInViewRange(CurrentThrowableObject);
+		if (CurrentThrowableObject && CurrentThrowableObject->PullToActor(this)) {
 			State = ECharacterThrowState::RequestingPull;
+			CurrentThrowableObject->SetHighlight(false);
+		}
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Got nothing to pull"));

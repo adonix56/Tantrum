@@ -67,4 +67,7 @@ public:
 	UFUNCTION()
 	void Launch(FVector Velocity);
 
+	UFUNCTION()
+	void SetHighlight(bool Activate);
+
 };

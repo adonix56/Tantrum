@@ -58,6 +58,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	ECharacterThrowState State = ECharacterThrowState::None;
 
+	bool IsActorInViewRange(AActor* Target);
+
+	UPROPERTY(EditAnywhere, Category = "Throwing")
+	float MaxAngleToPull = 25.0f;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
