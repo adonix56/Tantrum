@@ -6,6 +6,15 @@
 #include "GameFramework/GameModeBase.h"
 #include "TantrumGameModeBase.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EGameState : uint8 {
+	NONE UMETA(DisplayName = "NONE"),
+	Waiting UMETA(DisplayName = "Waiting"),
+	Playing UMETA(DisplayName = "Playing"),
+	Paused UMETA(DisplayName = "Paused"),
+	GameOver UMETA(DisplayName = "GameOver"),
+};
 /**
  * 
  */
@@ -13,5 +22,28 @@ UCLASS()
 class TANTRUM_API ATantrumGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+
+	ATantrumGameModeBase();
+
+	virtual void BeginPlay() override;
+
+	const EGameState GetCurrentGameState() { return CurrentGameState; };
+
+	void PlayerReachedEnd();
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="States", meta=(AllowPrivateAccess="true"))
+	EGameState CurrentGameState = EGameState::NONE;
+
+	UPROPERTY(EditAnywhere, Category="Game Details")
+	float GameCountdownDuration = 4.0f;
+
+	FTimerHandle TimerHandle;
+
+	void DisplayCountdown();
+	void StartGame();
 	
 };
