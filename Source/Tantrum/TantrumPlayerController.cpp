@@ -3,8 +3,15 @@
 
 #include "TantrumPlayerController.h"
 #include "TantrumCharacterBase.h"
+#include "TantrumGameModeBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+void ATantrumPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	GameModeRef = Cast<ATantrumGameModeBase>(GetWorld()->GetAuthGameMode());
+}
 
 void ATantrumPlayerController::SetupInputComponent() {
 	Super::SetupInputComponent();
@@ -25,6 +32,7 @@ void ATantrumPlayerController::SetupInputComponent() {
 }
 
 void ATantrumPlayerController::RequestJump() {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (GetCharacter()) {
 		GetCharacter()->Jump();
 	}
@@ -37,6 +45,7 @@ void ATantrumPlayerController::RequestStopJump() {
 }
 
 void ATantrumPlayerController::RequestCrouch() {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (GetCharacter()) {
 		if (!GetCharacter()->GetCharacterMovement()->IsMovingOnGround()) { return; }
 		if (GetCharacter()->bIsCrouched)
@@ -47,18 +56,21 @@ void ATantrumPlayerController::RequestCrouch() {
 }
 
 void ATantrumPlayerController::RequestSprint() {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (GetCharacter()) {
 		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
 	}
 }
 
 void ATantrumPlayerController::RequestWalk() {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (GetCharacter()) {
 		GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	}
 }
 
 void ATantrumPlayerController::RequestPull() {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (GetCharacter()) {
 		ATantrumCharacterBase* CharacterBase = Cast<ATantrumCharacterBase>(GetCharacter());
 		if (CharacterBase) {
@@ -69,6 +81,7 @@ void ATantrumPlayerController::RequestPull() {
 }
 
 void ATantrumPlayerController::RequestThrow() {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (GetCharacter()) {
 		ATantrumCharacterBase* CharacterBase = Cast<ATantrumCharacterBase>(GetCharacter());
 		if (CharacterBase) {
@@ -78,6 +91,7 @@ void ATantrumPlayerController::RequestThrow() {
 }
 
 void ATantrumPlayerController::RequestMoveForward(float AxisValue) {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (AxisValue != 0.0f) {
 		FRotator const ControlSpaceRot = GetControlRotation();
 		GetPawn()->AddMovementInput(FRotationMatrix(ControlSpaceRot).GetScaledAxis(EAxis::X), AxisValue);
@@ -85,6 +99,7 @@ void ATantrumPlayerController::RequestMoveForward(float AxisValue) {
 }
 
 void ATantrumPlayerController::RequestMoveRight(float AxisValue) {
+	if (!GameModeRef || GameModeRef->GetCurrentGameState() != EGameState::Playing) { return; }
 	if (AxisValue != 0.0f) {
 		FRotator const ControlSpaceRot = GetControlRotation();
 		GetPawn()->AddMovementInput(FRotationMatrix(ControlSpaceRot).GetScaledAxis(EAxis::Y), AxisValue);

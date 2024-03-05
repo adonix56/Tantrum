@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "TantrumPlayerController.generated.h"
 
+class ATantrumGameModeBase;
 /**
  * 
  */
@@ -15,7 +16,7 @@ class TANTRUM_API ATantrumPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 protected:
-	//void BeginPlay() override;
+	virtual void BeginPlay() override;
 	void SetupInputComponent() override;
 	void RequestJump();
 	void RequestStopJump();
@@ -36,4 +37,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Look")
 	float BaseLookRightRate = 90.0f;
+
+	ATantrumGameModeBase* GameModeRef;
 };
