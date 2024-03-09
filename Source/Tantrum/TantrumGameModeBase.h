@@ -9,7 +9,7 @@
 
 UENUM(BlueprintType)
 enum class EGameState : uint8 {
-	NONE UMETA(DisplayName = "NONE"),
+	None UMETA(DisplayName = "None"),
 	Waiting UMETA(DisplayName = "Waiting"),
 	Playing UMETA(DisplayName = "Playing"),
 	Paused UMETA(DisplayName = "Paused"),
@@ -36,7 +36,7 @@ public:
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="States", meta=(AllowPrivateAccess="true"))
-	EGameState CurrentGameState = EGameState::NONE;
+	EGameState CurrentGameState = EGameState::None;
 
 	UPROPERTY(EditAnywhere, Category="Game Details")
 	float GameCountdownDuration = 4.0f;

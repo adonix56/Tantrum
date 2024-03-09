@@ -7,6 +7,23 @@
 #include "Engine/EngineTypes.h"
 #include "Components/SphereComponent.h"
 
+/*static AActor* GetClosestActor(const TArray<AActor*>& Actors, const FVector& PlayerLocation) {
+
+	if (Actors.Num() == 0) { return nullptr; }
+
+	AActor* Closest = Actors[0];
+	float ClosestDistance = FVector::Dist(Actors[0]->GetActorLocation(), PlayerLocation);
+	for (int i = 1; i < Actors.Num(); i++) {
+		float NewDistance = FVector::Dist(Actors[i]->GetActorLocation(), PlayerLocation);
+		if (NewDistance < ClosestDistance) {
+			Closest = Actors[i];
+			ClosestDistance = NewDistance;
+		}
+	}
+
+	return Closest;
+}*/
+
 // Sets default values
 ATantrumCharacterBase::ATantrumCharacterBase()
 {
