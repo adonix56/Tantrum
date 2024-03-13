@@ -23,8 +23,10 @@ void ATantrumGameModeBase::PlayerReachedEnd()
 {
 	CurrentGameState = EGameState::GameOver;
 
-	//TODO: Update Widget
-	//TODO: Return to control PlayerController Input state
+	GameWidget->LevelComplete();
+	FInputModeUIOnly InputMode;
+	PC->SetInputMode(InputMode);
+	PC->SetShowMouseCursor(true);
 }
 
 void ATantrumGameModeBase::DisplayCountdown()
@@ -40,4 +42,7 @@ void ATantrumGameModeBase::DisplayCountdown()
 void ATantrumGameModeBase::StartGame()
 {
 	CurrentGameState = EGameState::Playing;
+	FInputModeGameOnly InputMode;
+	PC->SetInputMode(InputMode);
+	PC->SetShowMouseCursor(false);
 }
