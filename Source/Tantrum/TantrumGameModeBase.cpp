@@ -2,6 +2,9 @@
 
 
 #include "TantrumGameModeBase.h"
+#include "TantrumGameWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
 ATantrumGameModeBase::ATantrumGameModeBase()
 {
@@ -26,7 +29,12 @@ void ATantrumGameModeBase::PlayerReachedEnd()
 
 void ATantrumGameModeBase::DisplayCountdown()
 {
-	//TODO: Return and create, store, and display widget
+	if (!GameWidgetClass) { return; }
+
+	PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	GameWidget = CreateWidget<UTantrumGameWidget>(PC, GameWidgetClass);
+	GameWidget->AddToViewport();
+	GameWidget->StartCountdown(GameCountdownDuration, this);
 }
 
 void ATantrumGameModeBase::StartGame()

@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "TantrumGameModeBase.generated.h"
 
+class UTantrumGameWidget;
 
 UENUM(BlueprintType)
 enum class EGameState : uint8 {
@@ -29,19 +30,27 @@ public:
 
 	virtual void BeginPlay() override;
 
-	const EGameState GetCurrentGameState() { return CurrentGameState; };
+	UFUNCTION(BlueprintCallable)
+	EGameState GetCurrentGameState() const { return CurrentGameState; };
 
 	void PlayerReachedEnd();
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="States", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(VisibleAnywhere, Category="States")
 	EGameState CurrentGameState = EGameState::None;
 
 	UPROPERTY(EditAnywhere, Category="Game Details")
 	float GameCountdownDuration = 4.0f;
 
 	FTimerHandle TimerHandle;
+
+	UPROPERTY()
+	UTantrumGameWidget* GameWidget;
+	UPROPERTY(EditAnywhere, Category="Widget")
+	TSubclassOf<UTantrumGameWidget> GameWidgetClass;
+
+	APlayerController* PC = nullptr;
 
 	void DisplayCountdown();
 	void StartGame();
