@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InteractInterface.h"
 #include "GameFramework/Character.h"
 #include "TantrumCharacterBase.generated.h"
 
@@ -19,7 +20,7 @@ enum class ECharacterThrowState : uint8 {
 };
 
 UCLASS()
-class TANTRUM_API ATantrumCharacterBase : public ACharacter
+class TANTRUM_API ATantrumCharacterBase : public ACharacter, public IInteractInterface
 {
 	GENERATED_BODY()
 
@@ -80,6 +81,16 @@ protected:
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	FOnMontageEnded MontageEndedDelegate;
+
+	void ApplyEffect_Implementation(EEffectType EffectType, bool bIsBuff) override;
+
+	void EndEffect();
+
+	bool bIsUnderEffect = false;
+	bool bIsEffectBuff = false;
+
+	float DefaultEffectCooldown = 5.0f;
+	float EffectCooldown = 0.0f;
 
 public:	
 	// Called every frame

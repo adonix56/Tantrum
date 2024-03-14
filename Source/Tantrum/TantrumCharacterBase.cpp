@@ -40,6 +40,8 @@ void ATantrumCharacterBase::BeginPlay()
 	Super::BeginPlay();
 	PickupTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapBegin);
 	PickupTrigger->OnComponentEndOverlap.AddDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapEnd);
+
+	EffectCooldown = DefaultEffectCooldown;
 }
 
 void ATantrumCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -106,6 +108,17 @@ void ATantrumCharacterBase::Tick(float DeltaTime)
 			CurrentThrowableObject = Closest;
 			if (CurrentThrowableObject)
 				CurrentThrowableObject->SetHighlight(true);
+		}
+	}
+
+	if (bIsUnderEffect) {
+		if (EffectCooldown > 0) {
+			EffectCooldown -= DeltaTime;
+		}
+		else {
+			bIsUnderEffect = false;
+			EffectCooldown = DefaultEffectCooldown;
+			EndEffect();
 		}
 	}
 }
@@ -205,5 +218,13 @@ void ATantrumCharacterBase::Pickup(AActor* TargetObject)
 		MoveIgnoreActorAdd(TargetObject);
 		ensure(TargetObject->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_r_ThrowableSocket")));
 	}
+}
+
+void ATantrumCharacterBase::ApplyEffect_Implementation(EEffectType EffectType, bool bIsBuff) {
+	UE_LOG(LogTemp, Warning, TEXT("Okay it's implemented"));
+}
+
+void ATantrumCharacterBase::EndEffect() {
+
 }
 
