@@ -25,6 +25,7 @@ protected:
 	void RequestWalk();
 	void RequestPull();
 	void RequestThrow();
+	void RequestUseObject();
 	void RequestMoveForward(float AxisValue);
 	void RequestMoveRight(float AxisValue);
 	void RequestLookUp(float AxisValue);

@@ -42,6 +42,17 @@ protected:
 	UFUNCTION()
 	void OnPickupTriggerOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UPROPERTY(EditAnywhere, Category = "Speed")
+	float BaseMoveSpeed = 300.0f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Speed")
+	float SprintBonus = 500.0f;
+
+	bool bIsSprinting = false;
+
+	UPROPERTY(VisibleAnywhere, Category = "Speed")
+	float CurrentMoveSpeedMultiplier = 1.0f;
+
 	UPROPERTY(EditAnywhere, Category = "Fall Impact")
 	float MinImpactSpeed = 800.0f;
 
@@ -86,11 +97,17 @@ protected:
 
 	void EndEffect();
 
-	bool bIsUnderEffect = false;
+	bool IsUnderEffect() const { return CurrentEffect != EEffectType::None; }
 	bool bIsEffectBuff = false;
 
 	float DefaultEffectCooldown = 5.0f;
 	float EffectCooldown = 0.0f;
+
+	EEffectType CurrentEffect = EEffectType::None;
+
+	void ResetThrowableObject();
+
+	void ChangeMoveSpeed();
 
 public:	
 	// Called every frame
@@ -109,6 +126,11 @@ public:
 
 	UFUNCTION()
 	void RequestThrow();
+
+	void RequestUseObject();
+
+	void RequestSprint(bool Sprint);
+
 
 	UFUNCTION()
 	void Pickup(AActor* TargetObject);

@@ -5,6 +5,7 @@
 
 #include "TantrumCharacterBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "InteractInterface.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Character.h"
@@ -42,7 +43,12 @@ void AThrowableActor::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-
+	if (State == EThrowableState::Throw) {
+		IInteractInterface* I = Cast<IInteractInterface>(Other);
+		if (I) {
+			I->Execute_ApplyEffect(Other, EffectType, false);
+		}
+	}
 }
 
 bool AThrowableActor::PullToActor(AActor* Target)
@@ -72,6 +78,10 @@ void AThrowableActor::AttachToPlayer(AActor* SelfActor, AActor* OtherActor, FVec
 void AThrowableActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (State == EThrowableState::Throw && ProjectileMovementComponent->Velocity.IsNearlyZero()) {
+		UE_LOG(LogTemp, Warning, TEXT("STOP!"));
+		State = EThrowableState::Idle;
+	}
 }
 
 void AThrowableActor::Throw(FVector Forward)

@@ -5,6 +5,8 @@
 #include "TantrumPlayerController.h"
 #include "ThrowableActor.h"
 #include "Engine/EngineTypes.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SphereComponent.h"
 
 /*static AActor* GetClosestActor(const TArray<AActor*>& Actors, const FVector& PlayerLocation) {
@@ -85,7 +87,7 @@ AThrowableActor* ATantrumCharacterBase::GetClosestThrowableObject()
 	AThrowableActor* Closest = nullptr;
 	float ShortestDistance = MAX_flt;
 	for (int i = 0; i < ThrowableObjects.Num(); i++) {
-		if (IsActorInViewRange(ThrowableObjects[i])) {
+		if (IsValid(ThrowableObjects[i]) && IsActorInViewRange(ThrowableObjects[i])) {
 			float NewDistance = GetSquaredDistanceTo(ThrowableObjects[i]);
 			if (NewDistance < ShortestDistance) {
 				ShortestDistance = NewDistance;
@@ -111,12 +113,11 @@ void ATantrumCharacterBase::Tick(float DeltaTime)
 		}
 	}
 
-	if (bIsUnderEffect) {
+	if (IsUnderEffect()) {
 		if (EffectCooldown > 0) {
 			EffectCooldown -= DeltaTime;
 		}
 		else {
-			bIsUnderEffect = false;
 			EffectCooldown = DefaultEffectCooldown;
 			EndEffect();
 		}
@@ -179,6 +180,27 @@ void ATantrumCharacterBase::RequestThrow()
 	}
 }
 
+void ATantrumCharacterBase::RequestUseObject() {
+	if (State == ECharacterThrowState::Holding && !IsUnderEffect()) {
+		ApplyEffect_Implementation(CurrentThrowableObject->GetEffectType(), true);
+		CurrentThrowableObject->Destroy();
+		ResetThrowableObject();
+	}
+}
+
+void ATantrumCharacterBase::RequestSprint(bool Sprint) {
+	bIsSprinting = Sprint;
+	ChangeMoveSpeed();
+}
+
+void ATantrumCharacterBase::ChangeMoveSpeed() {
+	float MoveSpeed = BaseMoveSpeed;
+	if (bIsSprinting) {
+		MoveSpeed += SprintBonus;
+	}
+	Cast<ACharacter>(this)->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed * CurrentMoveSpeedMultiplier;
+}
+
 void ATantrumCharacterBase::PlayThrowMontage() {
 	if (!ThrowAnimMontage) return;
 	const float PlayRate = 1.0f;
@@ -221,10 +243,43 @@ void ATantrumCharacterBase::Pickup(AActor* TargetObject)
 }
 
 void ATantrumCharacterBase::ApplyEffect_Implementation(EEffectType EffectType, bool bIsBuff) {
-	UE_LOG(LogTemp, Warning, TEXT("Okay it's implemented"));
+	if (IsUnderEffect()) { return; }
+
+	CurrentEffect = EffectType;
+	bIsEffectBuff = bIsBuff;
+
+	switch (CurrentEffect) {
+		case EEffectType::Speed:
+			if (bIsBuff) {
+				CurrentMoveSpeedMultiplier = 2.0f;
+			}
+			else {
+				CurrentMoveSpeedMultiplier = 0.25f;
+			}
+			ChangeMoveSpeed();
+			break;
+		default:
+			break;
+	}
 }
 
 void ATantrumCharacterBase::EndEffect() {
-
+	UE_LOG(LogTemp, Warning, TEXT("End Effect done"));
+	switch (CurrentEffect) {
+		case EEffectType::Speed:
+			CurrentMoveSpeedMultiplier = 1.0f;
+			ChangeMoveSpeed();
+			break;
+		default:
+			break;
+	}
+	CurrentEffect = EEffectType::None;
 }
 
+void ATantrumCharacterBase::ResetThrowableObject() {
+	if (IsValid(CurrentThrowableObject)) {
+		CurrentThrowableObject->Throw(FVector::ZeroVector);
+	}
+	CurrentThrowableObject = nullptr;
+	State = ECharacterThrowState::None;
+}

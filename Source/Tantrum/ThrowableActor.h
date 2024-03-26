@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InteractInterface.h"
 #include "ThrowableActor.generated.h"
 
 class UStaticMeshComponent;
@@ -51,12 +52,17 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	AActor* PullActor = nullptr;
 
+	UPROPERTY(EditAnywhere)
+	EEffectType EffectType = EEffectType::None;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsIdle() const { return State == EThrowableState::Idle; }
+
+	EEffectType const GetEffectType() { return EffectType; }
 
 	UFUNCTION(BlueprintCallable)
 	void Throw(FVector Direction);

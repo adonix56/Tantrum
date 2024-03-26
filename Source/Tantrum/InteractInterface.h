@@ -40,4 +40,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interact")
 	void ApplyEffect(EEffectType EffectType, bool bIsBuff);
+
 };
