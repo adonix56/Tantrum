@@ -222,7 +222,7 @@ void ATantrumCharacterBase::OnThrowNotify(FName NotifyName, const FBranchingPoin
 	if (State == ECharacterThrowState::Holding) {
 		State = ECharacterThrowState::None;
 		MoveIgnoreActorRemove(Cast<AActor>(CurrentThrowableObject));
-		CurrentThrowableObject->Throw(GetActorForwardVector());
+		CurrentThrowableObject->Throw(GetActorForwardVector(), ThrowPowerMultiplier * 1000.0f);
 	}
 }
 

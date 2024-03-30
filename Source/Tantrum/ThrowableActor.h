@@ -65,7 +65,7 @@ public:
 	EEffectType const GetEffectType() { return EffectType; }
 
 	UFUNCTION(BlueprintCallable)
-	void Throw(FVector Direction);
+	void Throw(FVector Forward, float Power = 1000.0f);
 
 	UFUNCTION(BlueprintCallable)
 	bool PullToActor(AActor* Target);

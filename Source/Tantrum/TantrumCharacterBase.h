@@ -9,6 +9,7 @@
 
 class AThrowableActor;
 class USphereComponent;
+class FEffectDataTable;
 
 UENUM(BlueprintType)
 enum class ECharacterThrowState : uint8 {
@@ -85,6 +86,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	UAnimMontage* ThrowAnimMontage = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "Throwing")
+	float ThrowPowerMultiplier = 1.0f;
+
 	UFUNCTION()
 	void OnThrowNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
@@ -108,6 +112,9 @@ protected:
 	void ResetThrowableObject();
 
 	void ChangeMoveSpeed();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
+	FEffectDataTable* EffectDataTable;
 
 public:	
 	// Called every frame

@@ -84,12 +84,12 @@ void AThrowableActor::Tick(float DeltaTime)
 	}
 }
 
-void AThrowableActor::Throw(FVector Forward)
+void AThrowableActor::Throw(FVector Forward, float Power)
 {
 	if (State == EThrowableState::Attach) {
 		State = EThrowableState::Throw;
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		Launch(Forward * 1000.0f);
+		Launch(Forward * Power);
 	}
 }
 
