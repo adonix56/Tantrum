@@ -9,7 +9,7 @@
 
 class AThrowableActor;
 class USphereComponent;
-class FEffectDataTable;
+class AEffectDataTable;
 
 UENUM(BlueprintType)
 enum class ECharacterThrowState : uint8 {
@@ -114,7 +114,7 @@ protected:
 	void ChangeMoveSpeed();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
-	FEffectDataTable* EffectDataTable;
+	AEffectDataTable* EffectDataTable;
 
 public:	
 	// Called every frame

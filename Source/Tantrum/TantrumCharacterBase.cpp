@@ -4,9 +4,11 @@
 #include "TantrumCharacterBase.h"
 #include "TantrumPlayerController.h"
 #include "ThrowableActor.h"
+#include "EffectDataTable.h"
 #include "Engine/EngineTypes.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 
 /*static AActor* GetClosestActor(const TArray<AActor*>& Actors, const FVector& PlayerLocation) {
@@ -40,6 +42,12 @@ ATantrumCharacterBase::ATantrumCharacterBase()
 void ATantrumCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	if (!EffectDataTable) {
+		TArray<AActor*> Found;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEffectDataTable::StaticClass(), Found);
+		verify(Found.Num() > 0);
+		EffectDataTable = Cast<AEffectDataTable>(Found[0]);
+	}
 	PickupTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapBegin);
 	PickupTrigger->OnComponentEndOverlap.AddDynamic(this, &ATantrumCharacterBase::OnPickupTriggerOverlapEnd);
 
@@ -247,15 +255,12 @@ void ATantrumCharacterBase::ApplyEffect_Implementation(EEffectType EffectType, b
 
 	CurrentEffect = EffectType;
 	bIsEffectBuff = bIsBuff;
+	FEffectStats* AppliedEffect = EffectDataTable->GetEffectStats(EffectType);
+	float AppliedEffectValue = (bIsBuff) ? AppliedEffect->EffectStrengthBuff : AppliedEffect->EffectStrengthDebuff;
 
 	switch (CurrentEffect) {
 		case EEffectType::Speed:
-			if (bIsBuff) {
-				CurrentMoveSpeedMultiplier = 2.0f;
-			}
-			else {
-				CurrentMoveSpeedMultiplier = 0.25f;
-			}
+			CurrentMoveSpeedMultiplier = AppliedEffectValue;
 			ChangeMoveSpeed();
 			break;
 		default:
