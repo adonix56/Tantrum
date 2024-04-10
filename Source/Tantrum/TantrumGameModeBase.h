@@ -47,12 +47,19 @@ protected:
 
 	UPROPERTY()
 	UTantrumGameWidget* GameWidget;
+
+	UPROPERTY()
+	TMap<APlayerController*, UTantrumGameWidget*> GameWidgets;
+
 	UPROPERTY(EditAnywhere, Category="Widget")
 	TSubclassOf<UTantrumGameWidget> GameWidgetClass;
 
 	APlayerController* PC = nullptr;
 
+	bool bSplitScreen = false;
+
 	void DisplayCountdown();
+	void SpawnPlayers();
 	void StartGame();
 	
 };

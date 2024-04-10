@@ -4,6 +4,7 @@
 #include "TantrumGameModeBase.h"
 #include "TantrumGameWidget.h"
 #include "Kismet/GameplayStatics.h"
+//#include "Engine/GameInstance.h"
 #include "Blueprint/UserWidget.h"
 
 ATantrumGameModeBase::ATantrumGameModeBase()
@@ -14,7 +15,9 @@ void ATantrumGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentGameState = EGameState::Waiting;
+	CurrentGameState = EGameState::Waiting; 
+	bSplitScreen = GetWorld()->GetName().Compare(FString("SplitScreenMP")) == 0;
+	SpawnPlayers();
 	DisplayCountdown();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATantrumGameModeBase::StartGame, GameCountdownDuration, false);
 }
@@ -29,6 +32,13 @@ void ATantrumGameModeBase::PlayerReachedEnd()
 	PC->SetShowMouseCursor(true);
 }
 
+void ATantrumGameModeBase::SpawnPlayers() {
+	if (bSplitScreen) {
+		FString Error;
+		GetWorld()->GetGameInstance()->CreateLocalPlayer(-1, Error, true);
+	}
+}
+
 void ATantrumGameModeBase::DisplayCountdown()
 {
 	if (!GameWidgetClass) { return; }
@@ -41,7 +51,7 @@ void ATantrumGameModeBase::DisplayCountdown()
 
 void ATantrumGameModeBase::StartGame()
 {
-	CurrentGameState = EGameState::Playing;
+	CurrentGameState = EGameState::Playing; 
 	FInputModeGameOnly InputMode;
 	PC->SetInputMode(InputMode);
 	PC->SetShowMouseCursor(false);
